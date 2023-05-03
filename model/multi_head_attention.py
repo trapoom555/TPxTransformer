@@ -32,7 +32,7 @@ class MultiHeadSelfAttention(nn.Module):
     
 # =============================================================================
 #     Description: Project Word Embeddings to Q, K, V then do MultiHeadSelfAttention
-#     input: Tensor [batch, seq_len, word_embed_dim]
+#     input: Tensor [batch, seq_len, d_model]
 #     output: Tensor [batch, seq_len, d_model]
 # =============================================================================
     
