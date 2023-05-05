@@ -15,18 +15,19 @@ class ScaledDotProduct(nn.Module):
 #     output: Tensor [batch, num_heads, seq_len_1, d_k]
 # =============================================================================
     
-    def __init__(self, mask):
+    def __init__(self, causal_mask: bool):
         super().__init__()
         
-        self.mask = mask
+        self.causal_mask = causal_mask
     
     def forward(self, q: Tensor, k: Tensor, v: Tensor):
         d_k = q.shape[-1] # head dimension
         dot_product = q @ k.transpose(-2, -1) # [batch, num_heads, seq_len_1, seq_len_2]
         scaled_dot_product = dot_product / math.sqrt(d_k)
         
-        if self.mask is not None:
-            scaled_dot_product = scaled_dot_product.masked_fill(self.mask == 0, -9e15)
+        if self.causal_mask == True:
+            mask = torch.triu(torch.ones_like(scaled_dot_product))
+            scaled_dot_product = scaled_dot_product.masked_fill(mask == 0, -9e15)
     
         attention_weight = F.softmax(scaled_dot_product, dim=-1)
         weighted_v = attention_weight @ v # [batch, num_heads, seq_len_1, d_k]
@@ -43,7 +44,7 @@ class MultiHeadSelfAttention(nn.Module):
 # =============================================================================
     
     
-    def __init__(self, input_dim: int, d_model: int, num_heads: int, mask):
+    def __init__(self, input_dim: int, d_model: int, num_heads: int, causal_mask : bool = False):
         super().__init__()
         
         try:
@@ -56,7 +57,7 @@ class MultiHeadSelfAttention(nn.Module):
         self.head_dim = d_model // num_heads # because they will be later concat
         
         # scaled_dot_product
-        self.scaled_dot_product = ScaledDotProduct(mask)
+        self.scaled_dot_product = ScaledDotProduct(causal_mask)
         
         # NN to project embedding to QKV tensor stack
         self.qkv_proj = nn.Linear(input_dim, 3 * d_model)
@@ -112,7 +113,7 @@ class MultiHeadEncoderDecoderAttention(nn.Module):
 # =============================================================================
     
     
-    def __init__(self, input_dim: int, d_model: int, num_heads: int, mask):
+    def __init__(self, input_dim: int, d_model: int, num_heads: int, causal_mask : bool = False):
         super().__init__()
         
         try:
@@ -125,7 +126,7 @@ class MultiHeadEncoderDecoderAttention(nn.Module):
         self.head_dim = d_model // num_heads # because they will be later concat
         
         # scaled_dot_product
-        self.scaled_dot_product = ScaledDotProduct(mask)
+        self.scaled_dot_product = ScaledDotProduct(causal_mask)
         
         # NN to project embedding to KV tensor stack from encoder
         self.kv_proj = nn.Linear(input_dim, 2 * d_model)

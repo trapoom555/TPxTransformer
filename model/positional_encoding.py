@@ -5,7 +5,7 @@ from torch import Tensor, nn
 import torch
 
 class PositionalEncoding(nn.Module):
-    def __init__(self, d_model: int, dropout: float = 0.1, max_len: int = 5000):
+    def __init__(self, d_model: int, dropout: float, max_len: int):
         
 # =============================================================================
 #         Description: Add Positional Encoding to Word Embedding Vector
