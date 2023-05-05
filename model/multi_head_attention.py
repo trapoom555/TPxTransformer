@@ -18,10 +18,14 @@ class ScaledDotProduct(nn.Module):
     def __init__(self):
         super().__init__()
     
-    def forward(self, q: Tensor, k: Tensor, v: Tensor, mask: bool = None):
+    def forward(self, q: Tensor, k: Tensor, v: Tensor, mask):
         d_k = q.shape[-1] # head dimension
         dot_product = q @ k.transpose(-2, -1) # [batch, num_heads, seq_len_1, seq_len_2]
         scaled_dot_product = dot_product / math.sqrt(d_k)
+        
+        if mask is not None:
+            scaled_dot_product = scaled_dot_product.masked_fill(mask == 0, -9e15)
+    
         attention_weight = F.softmax(scaled_dot_product, dim=-1)
         weighted_v = attention_weight @ v # [batch, num_heads, seq_len_1, d_k]
         return weighted_v
@@ -68,7 +72,7 @@ class MultiHeadSelfAttention(nn.Module):
         nn.init.xavier_uniform_(self.output_proj.weight)
         self.output_proj.bias.data.fill_(0)
     
-    def forward(self, x: Tensor, mask=None):
+    def forward(self, x: Tensor, mask):
         batch_size, seq_len, _ = x.shape
         
         # project embedding to QKV tensor stack
@@ -143,7 +147,7 @@ class MultiHeadEncoderDecoderAttention(nn.Module):
         nn.init.xavier_uniform_(self.output_proj.weight)
         self.output_proj.bias.data.fill_(0)
     
-    def forward(self, en: Tensor, de: Tensor, mask=None):
+    def forward(self, en: Tensor, de: Tensor, mask):
         batch_size, seq_len, _ = en.shape
         
         # project embedding from encoder to KV tensor stack
