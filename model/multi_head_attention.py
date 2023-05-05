@@ -25,6 +25,7 @@ class ScaledDotProduct(nn.Module):
         dot_product = q @ k.transpose(-2, -1) # [batch, num_heads, seq_len_1, seq_len_2]
         scaled_dot_product = dot_product / math.sqrt(d_k)
         
+        # lower triangular mask (prevent left-ward information flow)
         if self.causal_mask == True:
             mask = torch.triu(torch.ones_like(scaled_dot_product))
             scaled_dot_product = scaled_dot_product.masked_fill(mask == 0, -9e15)
@@ -107,8 +108,8 @@ class MultiHeadEncoderDecoderAttention(nn.Module):
     
 # =============================================================================
 #     Description: Project Word Embeddings to Q, K, V then do MultiHeadEncoderDecoderAttention
-#     en: Tensor [batch, seq_len, word_embed_dim]
-#     de: Tensor [batch, seq_len, word_embed_dim]
+#     en: Tensor [batch, seq_len, d_model]
+#     de: Tensor [batch, seq_len, d_model]
 #     output: Tensor [batch, seq_len, d_model]
 # =============================================================================
     

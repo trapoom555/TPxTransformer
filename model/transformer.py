@@ -12,7 +12,7 @@ class Transformer(nn.Module):
     
 # =============================================================================
 #     Description: Full Transformer Model
-#     input: x Tensor [batch, seq_len]
+#     input: Tensor [batch, seq_len]
 #     output: Tensor [batch, seq_len, n_token]
 # =============================================================================
 
