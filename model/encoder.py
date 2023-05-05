@@ -15,9 +15,7 @@ class EncoderBlock(nn.Module):
     def __init__(self, d_model: int, num_heads: int, dropout: float, d_ff: int, mask=None):
         super().__init__()
         
-        self.mask = mask
-        
-        self.self_attn = MultiHeadSelfAttention(d_model, d_model, num_heads)
+        self.self_attn = MultiHeadSelfAttention(d_model, d_model, num_heads, mask)
         
         self.point_wise_feed_forward_network = PointWiseFeedForwardNetwork(d_model, d_ff)
         
@@ -29,7 +27,7 @@ class EncoderBlock(nn.Module):
     
     def forward(self, x: Tensor):
         # residual connection
-        x = x + self.dropout(self.self_attn(x, self.mask))
+        x = x + self.dropout(self.self_attn(x))
         x = self.norm1(x)
         
         x = x + self.dropout(self.point_wise_feed_forward_network(x))
