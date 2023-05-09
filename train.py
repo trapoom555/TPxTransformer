@@ -8,6 +8,8 @@ import torch
 from create_test_dataset import CreateTestDataset
 from model.transformer import Transformer
 from torch import nn
+from loss.masked_NLL import masked_NLLLoss
+from metric.masked_accuracy import masked_accuracy
 
 # =============================================================================
 # parameters zone
@@ -90,16 +92,16 @@ def test(dataloader, model, loss_fn):
             pred = model(X, y_input)
             pred = pred.permute(0, 2, 1)
             test_loss += loss_fn(pred, y_output).item()
-            correct += (pred.argmax(1) == y_output).type(torch.float).sum().item() / pred.shape[2]
+            correct += masked_accuracy(pred, y_output)
     test_loss /= num_batches
     correct /= size
     print(f"Test Error: \n Accuracy: {(100*correct):>0.1f}%, Avg loss: {test_loss:>8f} \n")
 
 
-loss_fn = nn.NLLLoss()
+loss_fn = masked_NLLLoss
 optimizer = torch.optim.SGD(model.parameters(), lr=0.1)
 
-epochs = 5
+epochs = 10
 for t in range(epochs):
     print(f"Epoch {t+1}\n-------------------------------")
     train_loop(train_dataloader, model, loss_fn, optimizer)
