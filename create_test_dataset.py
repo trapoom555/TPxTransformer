@@ -39,8 +39,10 @@ class CreateTestDataset:
         self.ys_test = []
     
     def generate_sample(self):
-        # data_len = np.random.randint(low = 3, high = self.max_len-1)
-        data_len = self.max_len-2
+        data_len = np.random.randint(low = 3, high = self.max_len-1)
+        
+        # For no padding
+        # data_len = self.max_len-2
         
         # generate x
         x = np.random.randint(low = 3, high = self.max_num+1, size = data_len)
