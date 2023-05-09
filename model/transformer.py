@@ -29,7 +29,7 @@ class Transformer(nn.Module):
         self.decoder = Decoder(Nx, d_model, num_heads, dropout, d_ff)
         
         self.output_proj = nn.Linear(d_model, ntoken)
-        
+
     
     def forward(self, x: Tensor, y: Tensor):
         
@@ -38,6 +38,7 @@ class Transformer(nn.Module):
         encoder_embed = self.encoder(x)
         
         y = self.output_embed_map(y)
+        y = self.positional_encoding(y)
         decoder_embed = self.decoder(y, encoder_embed)
         
         out = self.output_proj(decoder_embed)
