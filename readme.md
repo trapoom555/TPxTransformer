@@ -14,7 +14,7 @@ The reasons for that are
 
 Shortly, the model consists of two building blocks
 1. Encoder : Encoder constructs embedded feature vector of the input sequence.
-2. Decoder : Decoder combines embedded feature vector from encoder and previous output to predict next token (output)
+2. Decoder : Decoder combines embedded feature vector from encoder and previous outputs to predict next token (output)
 
 You can read more details about Transformer's Architecture on my Blog soon!!  
 
