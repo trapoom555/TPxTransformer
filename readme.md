@@ -44,7 +44,7 @@ After adding start and stop token the data should look like this
 x: [1, 3, 9, 5, 6, 2]
 y: [1, 11, 12, 8, 14, 2]
 ```
-After shifting and modifing data according to [Attention is all you need](https://arxiv.org/abs/1706.03762), this is the what the final data looks like. 
+After shifting and modifing data according to [Attention is all you need](https://arxiv.org/abs/1706.03762), this is what the final data looks like. 
 ```
 Encoder input:  [1, 3, 9, 5, 6, 2]
 Decoder input:  [1, 11, 12, 8, 14]
